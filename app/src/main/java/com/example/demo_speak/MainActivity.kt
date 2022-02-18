@@ -5,42 +5,34 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Button
-import android.widget.TextView
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.ibm.icu.text.Transliterator
 import java.util.*
-import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val sm = SpeechManager(this).apply { initialize() }
-        val txt = findViewById<TextView>(R.id.testText)
+
+        val txt = findViewById<EditText>(R.id.testText)
+        val txt1 = findViewById<EditText>(R.id.test1Text)
+
         val spBtn = findViewById<Button>(R.id.speakButton)
         val spBtn2 = findViewById<Button>(R.id.speak2Button)
-        val spBtn3 = findViewById<Button>(R.id.speak3Button)
-
-
-        val w = "西服"
-        val t = "xī*fú"
-
-
-
-        val t2 = Pinyin.accent(w)
-        val t3 = Pinyin.noAccent(w)
-
-        txt.text = "西服"
 
         spBtn.setOnClickListener {
+            val w = txt.text?.toString()?.trim() ?: ""
+            val t = txt1.text?.toString()?.trim() ?: ""
             sm.speak(w, t)
         }
         spBtn2.setOnClickListener {
-            sm.speak(w, t2)
-        }
-        spBtn3.setOnClickListener {
-            sm.speak(w, t3)
+            val w = txt.text?.toString()?.trim() ?: ""
+            val t = txt1.text?.toString()?.trim() ?: ""
+            sm.speakTest(w, t)
         }
     }
 }
@@ -87,6 +79,11 @@ class SpeechManager(
 
     private fun speak(text: String): Int {
         return textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+    }
+
+    fun speakTest(word: String, transcription: String): Int {
+        val simplifiedWord = simplifyWord(word, transcription)
+        return textToSpeech.speak(simplifiedWord, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
     private fun speechXml(word: String, transcription: String, speed: Int): String {
